@@ -1,6 +1,6 @@
 import { ITransform } from "./ITransform.ts";
+import { Dict } from "./Dict.ts";
 
-export type Dict = {[k: string]: any};
 /**
  * Hint: Rest matches against zero types.
  */
@@ -25,12 +25,3 @@ export class Merge<S, TS extends E[], E = Dict> implements ITransform<S, Merged<
         return segments.reduce((memo, current) => ({...memo, ...current}), {}) as Merged<TS>;
     }
 }
-/*
-
-const m = new Merge<string, [string, {l: number}], any>(
-    {async transform(source: string) {return `! ${source}`;}},
-    {async transform(source: string) {return {l: source.length}; }}
-);
-
-console.log(await m.transform("ok"));
-*/
