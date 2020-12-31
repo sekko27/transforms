@@ -4,6 +4,7 @@ import { Merge, Merged, MergeTransforms } from "./Merge.ts";
 import { Compose, Composed, ComposeMap } from "./Compose.ts";
 import { Dict } from "./Dict.ts";
 import { Functional } from "./Functional.ts";
+import { Invoke, InvokeValue } from "./Invoke.ts";
 
 export interface ChainFunction<S, T> {
     transform(source: S): Promise<T>;
@@ -30,12 +31,18 @@ function _merge<S, TS extends E[], E = Dict>(transforms: MergeTransforms<S, TS>)
     result.transform = (source: S): Promise<Merged<TS>> => (new Merge(...transforms)).transform(source);
     return result;
 }
-    
+
 Transforms.merge = <S, TS extends E, E = Dict>(transform: ITransform<S, E>): MergeFunction<S, [E]> => _merge([transform]);
 
 Transforms.compose = <S, TS extends Dict>(transforms: ComposeMap<S, TS>): ITransform<S, Composed<TS>> => {
     return new Compose(transforms);
 }
+
+Transforms.invoke = <S, K extends keyof S, A extends any[]>(key: K, ...args: A): ITransform<S, InvokeValue<S[K], A>> => {
+    return new Invoke(key, ...args);
+};
+
+/*
 
 const c = Transforms.compose({
     numberOfAs: Transforms.chain
@@ -49,9 +56,10 @@ const c = Transforms.compose({
         (
             Transforms.compose({
                 x: Transforms(async (s) => `x ${s}`),
-                y: Transforms(async (s) => `y ${s}`)
+                y: Transforms(async (s) => `y ${s}`),
+                z: Transforms.invoke<string, "split", [string]>("split", "i")
             })
         )
 });
 
-console.log(await c.transform("lala"));
+*/
