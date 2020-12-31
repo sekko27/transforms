@@ -1,6 +1,6 @@
 import { ITransform } from "./ITransform.ts";
 
-type Dict = {[k: string]: any};
+export type Dict = {[k: string]: any};
 /**
  * Hint: Rest matches against zero types.
  */
@@ -13,7 +13,7 @@ export type MergeTransforms<S, TS extends E[], E = Dict> = TS extends [infer U1_
     ? R_2 extends E[] ? [ITransform<S, U1_2>, ...MergeTransforms<S, [U2_2, ...R_2]>] : never
     : TS extends [infer U, ...infer R] ? [ITransform<S, U>] : never;
 
-class Merge<S, TS extends E[], E = Dict> implements ITransform<S, Merged<TS>> {
+export class Merge<S, TS extends E[], E = Dict> implements ITransform<S, Merged<TS>> {
     private readonly transforms: MergeTransforms<S, TS>;
 
     constructor(...transforms: MergeTransforms<S, TS>) {
@@ -25,6 +25,7 @@ class Merge<S, TS extends E[], E = Dict> implements ITransform<S, Merged<TS>> {
         return segments.reduce((memo, current) => ({...memo, ...current}), {}) as Merged<TS>;
     }
 }
+/*
 
 const m = new Merge<string, [string, {l: number}], any>(
     {async transform(source: string) {return `! ${source}`;}},
@@ -32,3 +33,4 @@ const m = new Merge<string, [string, {l: number}], any>(
 );
 
 console.log(await m.transform("ok"));
+*/
