@@ -5,6 +5,7 @@ import { Compose, Composed, ComposeMap } from "./Compose.ts";
 import { Dict } from "./Dict.ts";
 import { Functional } from "./Functional.ts";
 import { Invoke, InvokeValue } from "./Invoke.ts";
+import { Map } from "./Map.ts";
 
 export interface ChainFunction<S, T> {
     transform(source: S): Promise<T>;
@@ -42,7 +43,7 @@ Transforms.invoke = <S, K extends keyof S, A extends any[]>(key: K, ...args: A):
     return new Invoke(key, ...args);
 };
 
-/*
+Transforms.map = <S, T>(map: ITransform<S, T>) => new Map(map);
 
 const c = Transforms.compose({
     numberOfAs: Transforms.chain
@@ -57,9 +58,10 @@ const c = Transforms.compose({
             Transforms.compose({
                 x: Transforms(async (s) => `x ${s}`),
                 y: Transforms(async (s) => `y ${s}`),
-                z: Transforms.invoke<string, "split", [string]>("split", "i")
+                z: Transforms.invoke<string, "split", [string]>("split", "i"),
+                u: Transforms.map(Transforms(async (s: string) => `[${s}]`))
             })
         )
 });
 
-*/
+console.log(await c.transform("laila"));
