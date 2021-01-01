@@ -6,9 +6,10 @@ import { Dict } from "./Dict.ts";
 import { Functional } from "./Functional.ts";
 import { Invoke, InvokeValue } from "./Invoke.ts";
 import { Map } from "./Map.ts";
+import {Result} from "./Result.ts";
 
 export interface ChainFunction<S, T> {
-    transform(source: S): Promise<T>;
+    transform(source: S): Result<T>;
     <N>(next: ITransform<T, N>): ChainFunction<S, N>;
 }
 
@@ -17,11 +18,11 @@ export interface MergeFunction<S, TS extends E[], E = Dict> {
     <N>(next: ITransform<S, N>): MergeFunction<S, [...TS, N]>;
 }
 
-export const Transforms = <S, T>(func: (source: S) => Promise<T>) => new Functional(func);
+export const Transforms = <S, T>(func: (source: S) => Result<T>) => new Functional(func);
 
 Transforms.chain = <S, T>(first: ITransform<S, T>): ChainFunction<S, T> => {
     const result = <N>(next: ITransform<T, N>): ChainFunction<S, N> => Transforms.chain(new Chain(first, next));
-    result.transform = (source: S): Promise<T> => first.transform(source);
+    result.transform = (source: S): Result<T> => first.transform(source);
     return result;
 }
 
