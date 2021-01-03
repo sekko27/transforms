@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.83.0/testing/asserts.ts";
+import { assertEquals, assertArrayIncludes } from "https://deno.land/std@0.83.0/testing/asserts.ts";
 
 import {Result} from "../../lib/Result.ts";
 import {ITransform} from "../../lib/ITransform.ts";
@@ -18,12 +18,17 @@ export class InOrder {
         return this.transform<S, S>(id, (source: S) => source);
     }
 
-    fail<S>(id: string): ITransform<S, S> {
+    fail<S>(id: string, errorFactory: () => Error = () => new Error("Failure")): ITransform<S, S> {
         return this.transform<S, S>(id, (source: S) => {
-            throw new Error("Failure");
+            throw errorFactory();
         });
     }
+
     ensure(...expected: string[]): void {
-        assertEquals(expected, this.calls);
+        assertEquals(this.calls, expected);
+    }
+
+    includes(...expected: string[]): void {
+        assertArrayIncludes(this.calls, expected);
     }
 }
