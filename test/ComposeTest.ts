@@ -33,11 +33,10 @@ Deno.test("compose - should fail on nested failure", async () => {
 });
 
 Deno.test("compose - should transform properly", async () => {
-    const inOrder = new InOrder();
     const result = await new Compose({
         a: Transforms(() => "a"),
         b: Transforms(() => 2),
         c: Transforms((source: string) => `${source} c`)
     }).transform("test");
     assertEquals(result, {a: "a", b: 2, c: "test c"});
-})
+});

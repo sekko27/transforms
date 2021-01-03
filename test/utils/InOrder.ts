@@ -24,6 +24,16 @@ export class InOrder {
         });
     }
 
+    method<C extends object, M extends keyof C, A extends any[]>(id: string, instance: C, method: M): C {
+        return new Proxy(instance, {
+            get: (target, name, args) => {
+                if (method === name) {
+                    this.calls.push(id);
+                }
+                return Reflect.get(target, name, args);
+            }
+        });
+    }
     ensure(...expected: string[]): void {
         assertEquals(this.calls, expected);
     }
